@@ -29,6 +29,7 @@ val source = spark.read.format("csv").option("header", "false").option("delimite
 val source_t1 = source.map(r => (r.getString(2).split(":")(0), r.getTimestamp(0), r.getString(11)))
 source_t1.toDF.createOrReplaceTempView("source_t1")
 
+// use spark sql LAG and Window functions to determine session boundary 
 // save processed data into parquet
 spark.sql("""
 SELECT _1 as client, _2 as timestamp, _3 as request, CONCAT(_1, CONCAT('_', SUM(new_session) OVER (PARTITION BY _1 ORDER BY _2))) AS session_id 
